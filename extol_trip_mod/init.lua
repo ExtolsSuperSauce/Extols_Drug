@@ -4,8 +4,9 @@ dofile("mods/extol_trip_mod/lib/shader_utilities.lua")
 postfx.append([[
 uniform vec4 extol_monochrome;
 uniform vec4 extol_edrug_color;
-uniform vec4 extol_edrug_rand_black;
+uniform vec4 extol_extras;
 uniform vec4 extol_edrug_rand;
+uniform vec4 extol_edrug_rand_black;
 uniform vec4 extol_edrug_rand2;
 ]],
 "uniform sampler2D tex_fog;",
@@ -38,6 +39,9 @@ if (extol_monochrome[3] > 0.5) {
 }
 if (extol_monochrome[2] > 0.5) {
 	color = mix( -color, extol_edrug_color.rgb, extol_edrug_color.a );
+}
+if (extol_extras[0] > 0.5) {
+	color = mix( -color, vec3(1.), extol_extras[2] );
 }
 ]],
 	"// various debug visualizations================================================================================",
@@ -83,6 +87,25 @@ vec3 drawRect(
 
         return color;
 	}
+	
+	vec2 fishEye(vec2 coord, float power){
+		vec2 extol_coord = coord;
+			float aspectRatio = window_size.x / window_size.y;
+			float strength = power;
+			vec2 intensity = vec2(strength * aspectRatio, strength * aspectRatio);
+			vec2 coords = coord;
+			coords = (coords - 0.5) * 2.0;        
+			vec2 realCoordOffs;
+			realCoordOffs.x = (1.0 - coords.y * coords.y) * intensity.y * (coords.x); 
+			realCoordOffs.y = (1.0 - coords.x * coords.x) * intensity.x * (coords.y);
+		if (extol_monochrome[2] > 0.5) {
+			extol_coord = coord  - realCoordOffs;
+		}
+		if (extol_extras[1] > 0.5) {
+			extol_coord = coord  - realCoordOffs;
+		}
+		return extol_coord;
+	}
 
     ]],
     "// utilities",
@@ -91,8 +114,31 @@ vec3 drawRect(
 
 
 postfx.append(
+	[[
+		tex_coord = fishEye(tex_coord, extol_edrug_rand2[3]);
+		tex_coord_y_inverted = fishEye(tex_coord_y_inverted, extol_edrug_rand2[3]);
+		tex_coord_glow = fishEye(tex_coord_glow, extol_edrug_rand2[3]);
+	]],
+	"	vec2 tex_coord_glow = tex_coord_glow_;",
+	"data/shaders/post_final.frag"
+)
+
+postfx.replace(
+	"tex_skylight, tex_coord_skylight",
+	"tex_skylight, fishEye(tex_coord_skylight, extol_edrug_rand2[3])",
+	"data/shaders/post_final.frag"
+)
+
+postfx.replace(
+	"tex_fog, tex_coord_fogofwar",
+	"tex_fog, fishEye(tex_coord_fogofwar, extol_edrug_rand2[3])",
+	"data/shaders/post_final.frag"
+)
+
+postfx.append(
 [[
 if (extol_monochrome[2] > 0.5) {
+
 	vec2 uv = gl_FragCoord.xy / window_size.xy;
 	if (extol_edrug_rand[0] > 0.5) {
 		if (extol_edrug_rand_black[0] > 0.5) {
@@ -136,20 +182,6 @@ if (extol_monochrome[2] > 0.5) {
 
 postfx.append(
 [[
-vec2 extol_uv = gl_FragCoord.xy / window_size.xy;
-float aspectRatio = window_size.x / window_size.y;
-float strength = extol_edrug_rand2[3];
-    
-vec2 intensity = vec2(strength * aspectRatio, strength * aspectRatio);
-
-vec2 coords = extol_uv;
-coords = (coords - 0.5) * 2.0;		
-vec2 realCoordOffs;
-realCoordOffs.x = (1.0 - coords.y * coords.y) * intensity.y * (coords.x); 
-realCoordOffs.y = (1.0 - coords.x * coords.x) * intensity.x * (coords.y);
-if (extol_monochrome[2] > 0.5) {
-	color_fg.rgb = mix( color_fg, texture2D( tex_fg, tex_coord - realCoordOffs ), 1.).rgb;
-}
 
 ]],
 	"// apply the lighting to the foreground",

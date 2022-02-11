@@ -37,6 +37,7 @@ local col_control = {}
 local col_control = get_color( ModSettingGet( "extol_trip_mod.edrug_color" ), ModSettingGet( "extol_trip_mod.edrug_sat" ), ModSettingGet( "extol_trip_mod.edrug_light" ) )
 GameSetPostFxParameter( "extol_edrug_color", col_control[1], col_control[2], col_control[3], ModSettingGet( "extol_trip_mod.edrug_opacity" ) )
 GameSetPostFxParameter( "extol_monochrome", ModSettingGet( "extol_trip_mod.mono_min" ), ModSettingGet( "extol_trip_mod.mono_max" ), check, tonumber(ModSettingGet( "extol_trip_mod.shader_bool" ))  )
+GameSetPostFxParameter( "extol_extras", ModSettingGet( "extol_trip_mod.inverted" ), ModSettingGet( "extol_trip_mod.fisheye" ), ModSettingGet( "extol_trip_mod.invert_strength" ), 0 )  
 if check == 1 and EntityGetWithName( "extol_edrug_entity" ) == 0 then
 	local edrug = EntityLoad("mods/extol_trip_mod/files/edrug.xml")
 	EntityAddChild( player, edrug )
