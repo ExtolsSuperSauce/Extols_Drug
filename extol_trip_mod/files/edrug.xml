@@ -1,0 +1,11 @@
+<Entity name="extol_edrug_entity" >
+
+	<InheritTransformComponent>
+    </InheritTransformComponent>
+
+	<LuaComponent 
+	    execute_every_n_frame="4"
+	    script_source_file="mods/extol_trip_mod/files/edrug.lua"
+	></LuaComponent>
+
+</Entity>

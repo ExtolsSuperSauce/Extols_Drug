@@ -1,0 +1,26 @@
+<Entity name="extol_edrug" >
+
+	<InheritTransformComponent>
+    </InheritTransformComponent>
+    
+    <GameEffectComponent 
+        effect="CUSTOM"
+        custom_effect_id="TRIP_00"
+        frames="-1"
+    ></GameEffectComponent >
+
+	<DrugEffectModifierComponent>
+		<fx_add
+			distortion_amount="0.1"
+			color_amount="0.1"
+			fractals_amount="0.1"
+			fractals_size="0.1"
+		/>
+	</DrugEffectModifierComponent>
+
+	<LuaComponent 
+	    execute_every_n_frame="15"
+	    script_source_file="mods/extol_trip_mod/files/trip.lua"
+	></LuaComponent>
+
+</Entity>
