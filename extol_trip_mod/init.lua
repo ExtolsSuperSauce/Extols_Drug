@@ -37,11 +37,23 @@ if (extol_monochrome[3] > 0.5) {
 		color = vec3(greyscale, greyscale, greyscale);
 	}
 }
-if (extol_monochrome[2] > 0.5) {
-	color = mix( -color, extol_edrug_color.rgb, extol_edrug_color.a );
+if (tex_coord.x > 1.){
+	color = mix( color, vec3(0.1), 0.75 );
+}
+if (tex_coord.x < 0.){
+	color = mix( color, vec3(0.1), 0.75 );
+}
+if (tex_coord.y > 1.){
+	color = mix( color, vec3(0.1), 0.75 );
+}
+if (tex_coord.y < 0.){
+	color = mix( color, vec3(0.1), 0.75 );
 }
 if (extol_extras[0] > 0.5) {
 	color = mix( -color, vec3(1.), extol_extras[2] );
+}
+if (extol_monochrome[2] > 0.5) {
+	color = mix( -color, extol_edrug_color.rgb, extol_edrug_color.a );
 }
 ]],
 	"// various debug visualizations================================================================================",
@@ -88,7 +100,7 @@ vec3 drawRect(
         return color;
 	}
 	
-	vec2 fishEye(vec2 coord, float power){
+vec2 fishEye(vec2 coord, float power){
 		vec2 extol_coord = coord;
 			float aspectRatio = window_size.x / window_size.y;
 			float strength = power;
@@ -98,10 +110,10 @@ vec3 drawRect(
 			vec2 realCoordOffs;
 			realCoordOffs.x = (1.0 - coords.y * coords.y) * intensity.y * (coords.x); 
 			realCoordOffs.y = (1.0 - coords.x * coords.x) * intensity.x * (coords.y);
-		if (extol_monochrome[2] > 0.5) {
+		if (extol_extras[1] > 0.5) {
 			extol_coord = coord  - realCoordOffs;
 		}
-		if (extol_extras[1] > 0.5) {
+		else if (extol_monochrome[2] > 0.5) {
 			extol_coord = coord  - realCoordOffs;
 		}
 		return extol_coord;
@@ -177,17 +189,6 @@ if (extol_monochrome[2] > 0.5) {
 "gl_FragColor.a = 1.0;",
 "data/shaders/post_final.frag"
 )
-
-
-
-postfx.append(
-[[
-
-]],
-	"// apply the lighting to the foreground",
-	"data/shaders/post_final.frag"
-)
-
 
 function OnPlayerSpawned( pid )
 	if EntityGetWithName( "extol_edrug" ) == 0 then
